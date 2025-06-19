@@ -1,9 +1,13 @@
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { router } from "expo-router";
+import { router, useNavigation } from "expo-router";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Button, Text, TextInput, View } from "react-native";
 import { z } from "zod";
 import { useAuthStore } from "../src/store/authStore";
+
+
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email"),
@@ -13,6 +17,13 @@ const loginSchema = z.object({
 type LoginForm = z.infer<typeof loginSchema>;
 
 export default function LoginScreen() {
+  const navigation = useNavigation(); 
+  useEffect(() => {
+    navigation.setOptions({
+      headerShown: false 
+    });
+  }, [navigation]);
+
   const login = useAuthStore((s) => s.login);
   const {
     handleSubmit,
@@ -28,28 +39,49 @@ export default function LoginScreen() {
   };
 
   return (
-    <View className="flex-1 justify-center items-center px-6 bg-white">
-      <Text className="text-2xl font-bold mb-6">Login</Text>
-      <TextInput
-        className="border w-full p-3 mb-2 rounded"
-        placeholder="E-mail"
-        autoCapitalize="none"
-        keyboardType="email-address"
-        onChangeText={(t) => setValue("email", t)}
+    <View className="flex-1 justify-center items-center px-6 bg-[#B6DAF4]">
+      <MaterialCommunityIcons
+        name="teddy-bear"
+        size={60}
+        color="#4292d8"
+        style={{ marginBottom: 16 }}
       />
-      {errors.email && (
-        <Text className="text-red-600 mb-2">{errors.email.message}</Text>
-      )}
-      <TextInput
-        className="border w-full p-3 mb-2 rounded"
-        placeholder="Password"
-        secureTextEntry
-        onChangeText={(t) => setValue("password", t)}
-      />
-      {errors.password && (
-        <Text className="text-red-600 mb-2">{errors.password.message}</Text>
-      )}
-      <Button title="Login" onPress={handleSubmit(onSubmit)} />
+      <Text className="text-3xl font-extrabold mb-7 text-[#4292d8] tracking-wide">
+        TrackToy
+      </Text>
+      
+      <View className="bg-white w-full rounded-2xl p-6 shadow-lg items-center">
+        <Text className="text-2xl font-bold mb-6 text-[#4292d8]">Login</Text>
+        
+        <TextInput
+          className="border-2 border-[#62A7E7] w-full p-3 mb-2 rounded text-[#4292d8]"
+          placeholder="E-mail"
+          placeholderTextColor="#62A7E7"
+          autoCapitalize="none"
+          keyboardType="email-address"
+          onChangeText={(t) => setValue("email", t)}
+        />
+        {errors.email && (
+          <Text className="text-[#F86C6B] mb-2">{errors.email.message}</Text>
+        )}
+        
+        <TextInput
+          className="border-2 border-[#62A7E7] w-full p-3 mb-2 rounded text-[#4292d8]"
+          placeholder="Password"
+          placeholderTextColor="#62A7E7"
+          secureTextEntry
+          onChangeText={(t) => setValue("password", t)}
+        />
+        {errors.password && (
+          <Text className="text-[#F86C6B] mb-2">{errors.password.message}</Text>
+        )}
+        
+        <Button
+          title="Login"
+          color="#4292d8"
+          onPress={handleSubmit(onSubmit)}
+        />
+      </View>
     </View>
   );
 }

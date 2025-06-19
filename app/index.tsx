@@ -1,14 +1,22 @@
-import { router } from "expo-router";
+import { router, useNavigation } from "expo-router";
 import LottieView from "lottie-react-native";
 import { useEffect } from "react";
 import { Text, View } from "react-native";
 
 export default function SplashScreen() {
+  const navigation = useNavigation();
+
   useEffect(() => {
-    setTimeout(() => {
+    navigation.setOptions({
+      headerShown: false,
+    });
+    
+    const timer = setTimeout(() => {
       router.replace("/login");
-    }, 1800); 
-  }, []);
+    }, 1800);
+
+    return () => clearTimeout(timer);
+  }, [navigation]); 
 
   return (
     <View className="flex-1 items-center justify-center bg-white">

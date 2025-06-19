@@ -1,20 +1,24 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { router } from "expo-router";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Alert, Button, Text, TextInput, View } from "react-native";
+import { Alert, Button, Platform, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useClientsStore } from "../src/store/clientsStore";
 import { ClientForm, clientSchema } from "../src/types/client";
 
 export default function ClientFormScreen() {
   const addClient = useClientsStore((s) => s.addClient);
-
   const {
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<ClientForm>({
     resolver: zodResolver(clientSchema),
   });
+  const [showPicker, setShowPicker] = useState(false);
+  const birth = watch("birth");
 
   function onSubmit(data: ClientForm) {
     addClient(data);
@@ -45,11 +49,31 @@ export default function ClientFormScreen() {
         <Text className="text-red-600 mb-2">{errors.email.message}</Text>
       )}
 
-      <TextInput
+      <TouchableOpacity
         className="border w-full p-3 mb-4 rounded"
-        placeholder="Birth Date (YYYY-MM-DD)"
-        onChangeText={(t) => setValue("birth", t)}
-      />
+        onPress={() => setShowPicker(true)}
+      >
+        <Text className={birth ? "text-black" : "text-gray-400"}>
+          {birth ? birth : "Birth Date"}
+        </Text>
+      </TouchableOpacity>
+      {showPicker && (
+        <DateTimePicker
+          value={birth ? new Date(birth) : new Date()}
+          mode="date"
+          display={Platform.OS === "ios" ? "spinner" : "default"}
+          onChange={(_, date) => {
+            setShowPicker(Platform.OS === "ios"); 
+            if (date) {
+              const yyyy = date.getFullYear();
+              const mm = String(date.getMonth() + 1).padStart(2, "0");
+              const dd = String(date.getDate()).padStart(2, "0");
+              setValue("birth", `${yyyy}-${mm}-${dd}`);
+            }
+          }}
+          maximumDate={new Date()}
+        />
+      )}
       {errors.birth && (
         <Text className="text-red-600 mb-2">{errors.birth.message}</Text>
       )}

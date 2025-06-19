@@ -1,3 +1,4 @@
+import { useClientsStore } from "@/src/store/clientsStore";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Button, FlatList, Text, View } from "react-native";
@@ -14,10 +15,11 @@ function getFirstUnusedLetter(name: string): string {
 export default function ClientsScreen() {
   const [clients, setClients] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const storedClients = useClientsStore((s) => s.clients);
 
   useEffect(() => {
     fetchClients().then((data) => {
-      setClients(normalizeClients(data));
+      setClients([...normalizeClients(data), ...storedClients]);
       setLoading(false);
     });
   }, []);

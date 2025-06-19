@@ -2,7 +2,6 @@ import { fetchClients } from "@/services/clientsService";
 import { useAuthStore } from "@/store/authStore";
 import { useClientsStore } from "@/store/clientsStore";
 import { normalizeClients } from "@/utils/normalizeClients";
-
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router, useNavigation } from "expo-router";
 import { JSX, useEffect, useState } from "react";
@@ -11,6 +10,7 @@ import {
   FlatList,
   Pressable,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -27,6 +27,7 @@ const ClientsScreen = (): JSX.Element => {
   const [loading, setLoading] = useState(true);
   const clients = useClientsStore((s) => s.clients);
   const logout = useAuthStore((s) => s.logout);
+  const [filter, setFilter] = useState("");
 
   useEffect(() => {
     navigation.setOptions({
@@ -43,8 +44,11 @@ const ClientsScreen = (): JSX.Element => {
       unique.forEach((client) => useClientsStore.getState().addClient(client));
       setLoading(false);
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const filteredClients = clients.filter((client) =>
+    client.name.toLowerCase().includes(filter.trim().toLowerCase())
+  );
 
   return (
     <View className="flex-1 bg-[#B6DAF4]">
@@ -68,12 +72,17 @@ const ClientsScreen = (): JSX.Element => {
           className="p-2 rounded-full bg-white/70"
           activeOpacity={0.7}
         >
-          <MaterialCommunityIcons
-            name="logout"
-            size={26}
-            color="#4292d8"
-          />
+          <MaterialCommunityIcons name="logout" size={26} color="#4292d8" />
         </TouchableOpacity>
+      </View>
+      <View className="px-6 mb-2">
+        <TextInput
+          className="border-2 border-[#62A7E7] bg-white rounded-xl px-4 py-3 text-[#4292d8] mb-2"
+          placeholder="Search by name..."
+          placeholderTextColor="#62A7E7"
+          value={filter}
+          onChangeText={setFilter}
+        />
       </View>
 
       <View className="flex-row justify-between px-6 mb-4">
@@ -102,7 +111,7 @@ const ClientsScreen = (): JSX.Element => {
           <ActivityIndicator size="large" color="#4292d8" style={{ marginTop: 40 }} />
         ) : (
           <FlatList
-            data={clients}
+            data={filteredClients}
             keyExtractor={(item) => item.email}
             renderItem={({ item }) => (
               <Pressable

@@ -1,18 +1,24 @@
 import { router } from "expo-router";
+import LottieView from "lottie-react-native";
 import { useEffect } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 export default function SplashScreen() {
   useEffect(() => {
     setTimeout(() => {
       router.replace("/login");
-    }, 1500); 
+    }, 1800); 
   }, []);
 
   return (
     <View className="flex-1 items-center justify-center bg-white">
-      <Text className="text-3xl font-bold">TrackToy</Text>
-      <ActivityIndicator size="large" className="mt-4" />
+      <LottieView
+        source={require("../assets/tracktoy-splash.json")}
+        autoPlay
+        loop
+        style={{ width: 160, height: 160 }}
+      />
+      <Text className="text-3xl font-bold mt-4">TrackToy</Text>
     </View>
   );
 }

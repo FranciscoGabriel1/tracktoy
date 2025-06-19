@@ -1,7 +1,7 @@
 import { useClientsStore } from "@/src/store/clientsStore";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Button, FlatList, Text, View } from "react-native";
+import { ActivityIndicator, Button, FlatList, Pressable, Text, View } from "react-native";
 import { fetchClients } from "../src/services/clientsService";
 import { normalizeClients } from "../src/utils/normalizeClients";
 
@@ -13,48 +13,59 @@ function getFirstUnusedLetter(name: string): string {
 }
 
 export default function ClientsScreen() {
-  const [clients, setClients] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const storedClients = useClientsStore((s) => s.clients);
+  const clients = useClientsStore((s) => s.clients);
 
   useEffect(() => {
     fetchClients().then((data) => {
-      setClients([...normalizeClients(data), ...storedClients]);
+      const normalized = normalizeClients(data);
+      const unique = normalized.filter(
+        n => !clients.some(c => c.email === n.email)
+      );
+      unique.forEach(client => useClientsStore.getState().addClient(client));
       setLoading(false);
     });
   }, []);
 
-  return (
-<View className="flex-1 bg-white p-4">
-  <Text className="text-2xl font-bold mb-3">Clients</Text>
-  <Button title="Add Client" onPress={() => router.push("/client-form")} />
-  <Button
-    title="Go to Statistics"
-    onPress={() => router.push("/statistics")}
-    color="#3c82f6"
-  />
-  {loading ? (
-    <ActivityIndicator size="large" style={{ marginTop: 20 }} />
-  ) : (
-    <FlatList
-      data={clients}
-      keyExtractor={(item) => item.email}
-      renderItem={({ item }) => (
-        <View className="flex-row items-center p-3 my-2 border rounded-lg">
-          <View className="w-10 h-10 rounded-full bg-blue-200 items-center justify-center mr-4">
-            <Text className="font-bold text-lg">
-              {getFirstUnusedLetter(item.name)}
-            </Text>
-          </View>
-          <View>
-            <Text className="font-semibold">{item.name}</Text>
-            <Text className="text-xs text-gray-500">{item.email}</Text>
-          </View>
-        </View>
-      )}
-    />
-  )}
-</View>
 
+  return (
+    <View className="flex-1 bg-white p-4">
+      <Text className="text-2xl font-bold mb-3">Clients</Text>
+      <Button title="Add Client" onPress={() => router.push("/client-form")} />
+      <Button
+        title="Go to Statistics"
+        onPress={() => router.push("/statistics")}
+        color="#3c82f6"
+      />
+      {loading ? (
+        <ActivityIndicator size="large" style={{ marginTop: 20 }} />
+      ) : (
+        <FlatList
+          data={clients}
+          keyExtractor={(item) => item.email}
+          renderItem={({ item }) => (
+            <Pressable
+              onPress={() =>
+                router.push({
+                  pathname: "/client-form",
+                  params: { email: item.email },
+                })
+              }
+              className="flex-row items-center p-3 my-2 border rounded-lg"
+            >
+              <View className="w-10 h-10 rounded-full bg-blue-200 items-center justify-center mr-4">
+                <Text className="font-bold text-lg">
+                  {getFirstUnusedLetter(item.name)}
+                </Text>
+              </View>
+              <View>
+                <Text className="font-semibold">{item.name}</Text>
+                <Text className="text-xs text-gray-500">{item.email}</Text>
+              </View>
+            </Pressable>
+          )}
+        />
+      )}
+    </View>
   );
 }

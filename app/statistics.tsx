@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Dimensions, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, Dimensions, ScrollView, Text, View } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import { fetchClients } from "../src/services/clientsService";
 import { normalizeClients } from "../src/utils/normalizeClients";
@@ -46,10 +46,7 @@ function getTopClients(clients: Client[]) {
 export default function StatisticsScreen() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
-  const [chart, setChart] = useState<{ labels: string[]; data: number[] }>({
-    labels: [],
-    data: [],
-  });
+  const [chart, setChart] = useState<{ labels: string[]; data: number[] }>({ labels: [], data: [] });
   const [tops, setTops] = useState<any>(null);
 
   useEffect(() => {
@@ -65,59 +62,62 @@ export default function StatisticsScreen() {
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
-        <Text>Loading statistics...</Text>
+        <ActivityIndicator size="large" color="#4292d8" />
+        <Text className="mt-4 text-lg font-semibold text-[#4292d8]">Loading statistics...</Text>
       </View>
     );
   }
 
   return (
     <ScrollView className="flex-1 bg-white p-4">
-      <Text className="text-2xl font-bold mb-6">Sales Statistics</Text>
-      {chart.labels.length > 0 ? (
-        <LineChart
-          data={{
-            labels: chart.labels,
-            datasets: [{ data: chart.data }],
-          }}
-          width={Dimensions.get("window").width - 32}
-          height={220}
-          yAxisSuffix="R$"
-          chartConfig={{
-            backgroundGradientFrom: "#fff",
-            backgroundGradientTo: "#fff",
-            decimalPlaces: 0,
-            color: (opacity = 1) => `rgba(60, 130, 246, ${opacity})`,
-            labelColor: (opacity = 1) => `rgba(0,0,0,${opacity})`,
-            style: { borderRadius: 16 },
-            propsForDots: { r: "4" },
-          }}
-          bezier
-          style={{ borderRadius: 16, marginBottom: 20 }}
-        />
-      ) : (
-        <Text>No sales data to show.</Text>
-      )}
+      <Text className="text-2xl font-extrabold mb-3 text-[#4292d8] tracking-wide text-center">📊 Sales Statistics</Text>
 
+      <View className="bg-[#e8f2fc] rounded-2xl p-4 shadow mb-7">
+        {chart.labels.length > 0 ? (
+          <LineChart
+            data={{
+              labels: chart.labels,
+              datasets: [{ data: chart.data }],
+            }}
+            width={Dimensions.get("window").width - 48}
+            height={230}
+            yAxisSuffix=" R$"
+            chartConfig={{
+              backgroundGradientFrom: "#e8f2fc",
+              backgroundGradientTo: "#e8f2fc",
+              decimalPlaces: 0,
+              color: (opacity = 1) => `rgba(66, 146, 216, ${opacity})`,
+              labelColor: (opacity = 1) => `rgba(80, 80, 80, ${opacity})`,
+              style: { borderRadius: 18 },
+              propsForDots: { r: "5", strokeWidth: "3", stroke: "#f59e42" },
+              propsForBackgroundLines: { stroke: "#d0e6fb" },
+            }}
+            bezier
+            style={{ borderRadius: 18 }}
+          />
+        ) : (
+          <Text className="text-center text-gray-500 font-medium">No sales data to show.</Text>
+        )}
+      </View>
+
+      {/* Destaques bonitos */}
       {tops && (
-        <View className="mt-4">
-          <Text className="text-lg font-semibold mb-2">Highlights</Text>
-          <View className="mb-2">
-            <Text>
-              <Text className="font-bold">Top Volume: </Text>
-              {tops.topVolume.name} ({tops.topVolume.total})
-            </Text>
+        <View className="bg-white rounded-2xl p-4 shadow-lg mb-4">
+          <Text className="text-xl font-bold text-[#4292d8] mb-3">🏅 Highlights</Text>
+          <View className="flex-row items-center mb-2">
+            <Text className="text-base font-semibold text-[#363B47] mr-2">🥇 Top Volume:</Text>
+            <Text className="text-base text-[#f59e42] font-bold">{tops.topVolume.name}</Text>
+            <Text className="text-base text-[#7B7E8D] ml-2">({tops.topVolume.total})</Text>
           </View>
-          <View className="mb-2">
-            <Text>
-              <Text className="font-bold">Top Avg Sale: </Text>
-              {tops.topAvg.name} ({tops.topAvg.avg.toFixed(2)})
-            </Text>
+          <View className="flex-row items-center mb-2">
+            <Text className="text-base font-semibold text-[#363B47] mr-2">💸 Top Avg Sale:</Text>
+            <Text className="text-base text-[#4292d8] font-bold">{tops.topAvg.name}</Text>
+            <Text className="text-base text-[#7B7E8D] ml-2">({tops.topAvg.avg.toFixed(2)})</Text>
           </View>
-          <View className="mb-2">
-            <Text>
-              <Text className="font-bold">Top Frequency: </Text>
-              {tops.topFreq.name} ({tops.topFreq.freq})
-            </Text>
+          <View className="flex-row items-center">
+            <Text className="text-base font-semibold text-[#363B47] mr-2">🔄 Top Frequency:</Text>
+            <Text className="text-base text-[#B6DAF4] font-bold">{tops.topFreq.name}</Text>
+            <Text className="text-base text-[#7B7E8D] ml-2">({tops.topFreq.freq})</Text>
           </View>
         </View>
       )}

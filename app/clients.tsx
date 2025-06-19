@@ -1,8 +1,11 @@
-import { useAuthStore } from "@/src/store/authStore";
-import { useClientsStore } from "@/src/store/clientsStore";
+import { fetchClients } from "@/services/clientsService";
+import { useAuthStore } from "@/store/authStore";
+import { useClientsStore } from "@/store/clientsStore";
+import { normalizeClients } from "@/utils/normalizeClients";
+
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router, useNavigation } from "expo-router";
-import { useEffect, useState } from "react";
+import { JSX, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -11,8 +14,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { fetchClients } from "../src/services/clientsService";
-import { normalizeClients } from "../src/utils/normalizeClients";
 
 function getFirstUnusedLetter(name: string): string {
   const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
@@ -21,8 +22,8 @@ function getFirstUnusedLetter(name: string): string {
   return first ? first.toUpperCase() : "-";
 }
 
-export default function ClientsScreen() {
-  const navigation = useNavigation(); 
+const ClientsScreen = (): JSX.Element => {
+  const navigation = useNavigation();
   const [loading, setLoading] = useState(true);
   const clients = useClientsStore((s) => s.clients);
   const logout = useAuthStore((s) => s.logout);
@@ -42,6 +43,7 @@ export default function ClientsScreen() {
       unique.forEach((client) => useClientsStore.getState().addClient(client));
       setLoading(false);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -58,7 +60,6 @@ export default function ClientsScreen() {
             TrackToy
           </Text>
         </View>
-        {/* Botão logout */}
         <TouchableOpacity
           onPress={() => {
             logout();
@@ -135,4 +136,6 @@ export default function ClientsScreen() {
       </View>
     </View>
   );
-}
+};
+
+export default ClientsScreen;

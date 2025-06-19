@@ -1,8 +1,10 @@
+import { useClientsStore } from "@/store/clientsStore";
+import { ClientForm, clientSchema } from "@/types/client";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { router, useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { JSX, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   Alert,
@@ -12,14 +14,12 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useClientsStore } from "../src/store/clientsStore";
-import { ClientForm, clientSchema } from "../src/types/client";
 
 export const options = {
   headerShown: false,
 };
 
-export default function ClientFormScreen() {
+const ClientFormScreen = (): JSX.Element => {
   const addClient = useClientsStore((s) => s.addClient);
   const updateClient = useClientsStore((s) => s.updateClient);
   const allClients = useClientsStore((s) => s.clients);
@@ -87,10 +87,15 @@ export default function ClientFormScreen() {
         {errors.name && (
           <Text className="text-[#F86C6B] mb-2">{errors.name.message}</Text>
         )}
+
         <TextInput
           className={`border-2 w-full p-3 mb-2 rounded
-    ${editingClient ? "bg-gray-100 text-gray-400 border-gray-300" : "bg-white text-[#4292d8] border-[#62A7E7]"}
-  `}
+            ${
+              editingClient
+                ? "bg-gray-100 text-gray-400 border-gray-300"
+                : "bg-white text-[#4292d8] border-[#62A7E7]"
+            }
+          `}
           placeholder="E-mail"
           placeholderTextColor={editingClient ? "#b0b0b0" : "#62A7E7"}
           keyboardType="email-address"
@@ -145,4 +150,6 @@ export default function ClientFormScreen() {
       </View>
     </View>
   );
-}
+};
+
+export default ClientFormScreen;

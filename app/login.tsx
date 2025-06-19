@@ -1,13 +1,11 @@
+import { useAuthStore } from "@/store/authStore";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { router, useNavigation } from "expo-router";
-import { useEffect } from "react";
+import { JSX, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Button, Text, TextInput, View } from "react-native";
+import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import { z } from "zod";
-import { useAuthStore } from "../src/store/authStore";
-
-
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email"),
@@ -16,12 +14,10 @@ const loginSchema = z.object({
 
 type LoginForm = z.infer<typeof loginSchema>;
 
-export default function LoginScreen() {
-  const navigation = useNavigation(); 
+const LoginScreen = (): JSX.Element => {
+  const navigation = useNavigation();
   useEffect(() => {
-    navigation.setOptions({
-      headerShown: false 
-    });
+    navigation.setOptions({ headerShown: false });
   }, [navigation]);
 
   const login = useAuthStore((s) => s.login);
@@ -29,9 +25,7 @@ export default function LoginScreen() {
     handleSubmit,
     setValue,
     formState: { errors },
-  } = useForm<LoginForm>({
-    resolver: zodResolver(loginSchema),
-  });
+  } = useForm<LoginForm>({ resolver: zodResolver(loginSchema) });
 
   const onSubmit = (data: LoginForm) => {
     login();
@@ -49,10 +43,8 @@ export default function LoginScreen() {
       <Text className="text-3xl font-extrabold mb-7 text-[#4292d8] tracking-wide">
         TrackToy
       </Text>
-      
       <View className="bg-white w-full rounded-2xl p-6 shadow-lg items-center">
         <Text className="text-2xl font-bold mb-6 text-[#4292d8]">Login</Text>
-        
         <TextInput
           className="border-2 border-[#62A7E7] w-full p-3 mb-2 rounded text-[#4292d8]"
           placeholder="E-mail"
@@ -64,7 +56,6 @@ export default function LoginScreen() {
         {errors.email && (
           <Text className="text-[#F86C6B] mb-2">{errors.email.message}</Text>
         )}
-        
         <TextInput
           className="border-2 border-[#62A7E7] w-full p-3 mb-2 rounded text-[#4292d8]"
           placeholder="Password"
@@ -75,13 +66,19 @@ export default function LoginScreen() {
         {errors.password && (
           <Text className="text-[#F86C6B] mb-2">{errors.password.message}</Text>
         )}
-        
-        <Button
-          title="Login"
-          color="#4292d8"
+
+        <TouchableOpacity
+          className="bg-[#4292d8] rounded-xl px-4 py-3 w-full mt-2 shadow"
+          activeOpacity={0.85}
           onPress={handleSubmit(onSubmit)}
-        />
+        >
+          <Text className="text-white font-bold text-center text-base">
+            Login
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
-}
+};
+
+export default LoginScreen;

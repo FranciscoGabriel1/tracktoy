@@ -1,22 +1,20 @@
 import { router, useNavigation } from "expo-router";
 import LottieView from "lottie-react-native";
-import { useEffect } from "react";
+import { JSX, useEffect } from "react";
 import { Text, View } from "react-native";
 
-export default function SplashScreen() {
+const SplashScreen = (): JSX.Element => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    navigation.setOptions({
-      headerShown: false,
-    });
-    
+    navigation.setOptions({ headerShown: false });
+
     const timer = setTimeout(() => {
       router.replace("/login");
     }, 1800);
 
     return () => clearTimeout(timer);
-  }, [navigation]); 
+  }, [navigation]);
 
   return (
     <View className="flex-1 items-center justify-center bg-white">
@@ -29,4 +27,6 @@ export default function SplashScreen() {
       <Text className="text-3xl font-bold mt-4">TrackToy</Text>
     </View>
   );
-}
+};
+
+export default SplashScreen;

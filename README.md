@@ -27,6 +27,8 @@ TrackToy is an Expo + React Native app built with **create-expo-app**, styled us
 ![](.github/img1.png)
 | ![](.github/splash.gif) | ![](.github/chart.jpeg) |
 |----------------------|------------------------|
+
+
 In the output, you'll find options to open the app in a
 
 - [development build](https://docs.expo.dev/develop/development-builds/introduction/)
